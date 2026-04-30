@@ -1,175 +1,100 @@
-# 📊 Tech Stock Analysis and Prediction
+Tech Stock Analysis and Prediction
+A data science project analyzing NVDA stock returns across both regression and classification frameworks, comparing machine learning approaches and evaluating their limits in the context of financial market efficiency.
 
-A comprehensive data science project analyzing NVDA stock returns and comparing machine learning approaches for price prediction.
+Project Overview
+This project approaches stock prediction from two angles — predicting return magnitude (regression) and predicting price direction (classification) — across 1,984 NVDA trading days from 2018 to 2025. The analysis includes:
 
----
+Exploratory Data Analysis of 5 major tech stocks
+Feature engineering with lag features and rolling volatility measures
+Systematic benchmarking of Naive Baseline, Linear Regression, Random Forest, and XGBoost models
+Binary direction classification (Up/Down) with ROC curve and confusion matrix evaluation
+Honest interpretation of results through the lens of the Efficient Market Hypothesis
 
-## 🎯 Project Overview
 
-This project explores the predictive power of different machine learning models on NVDA (NVIDIA) stock returns from 2018-2025. The analysis includes:
-
-* Exploratory Data Analysis of 5 major tech stocks
-* Feature engineering with lag features and volatility measures
-* Systematic comparison of Naive Baseline, Linear Regression, Random Forest, and XGBoost models
-* Honest evaluation of model performance in the context of financial market efficiency
-
----
-
-## 📁 Project Structure
-
-```
+Project Structure
 Tech-Stock-Analysis-and-Prediction/
 │
-├── data/                          # All datasets
+├── data/
 │   ├── raw_data.csv              # Original stock data
 │   ├── cleaned_data.csv          # Preprocessed data
 │   └── nvda_cleaned.csv          # NVDA-specific cleaned data
 │
 └── Notebooks/
     ├── 01_eda.ipynb              # Exploratory Data Analysis
-    ├── 02_preprocessing.ipynb     # Data validation and cleaning
-    ├── 03_naive_baseline.ipynb    # Naive persistence model
-    ├── 04_linear_regression.ipynb # Linear regression model
-    ├── 05_random_forest.ipynb     # Random Forest ensemble
-    └── 06_xgboost.ipynb           # XGBoost gradient boosting
-```
+    ├── 02_preprocessing.ipynb    # Data validation and cleaning
+    ├── 03_naive_baseline.ipynb   # Naive persistence model
+    ├── 04_linear_regression.ipynb# Linear regression model
+    ├── 05_random_forest.ipynb    # Random Forest ensemble
+    ├── 06_xgboost.ipynb          # XGBoost gradient boosting
+    └── 07_classification.ipynb   # Direction classification with ROC & confusion matrix
 
----
+Regression Results — Return Magnitude Prediction
+ModelMSERMSEMAER² ScoreNaive Baseline0.0023040.0479960.034369-1.2744Linear Regression0.0009980.0315870.0227940.0149Random Forest0.0004570.0213870.017306-0.0511XGBoost0.0010410.0322580.023208-0.0274
+Key Findings
 
-## 🔍 Key Findings
+Random Forest achieved the lowest error metrics (MSE: 0.000457, MAE: 0.017306) making it the best regression performer despite a negative R²
+Linear Regression was the only model with a positive R² (0.0149) — the only model to outperform the mean baseline
+XGBoost performed worse than Random Forest, demonstrating that model complexity does not guarantee better performance on noisy financial data
+All ML models outperformed the naive baseline, validating the value of machine learning even on difficult prediction problems
+Feature importance analysis revealed lag4 (4-day prior return) as the strongest predictor, though importance was distributed fairly evenly across all features
 
-### Model Performance Comparison
 
-| Model | MSE | RMSE | MAE | R² Score |
-|-------|-----|------|-----|----------|
-| Naive Baseline | 0.002304 | 0.047996 | 0.034369 | -1.2744 |
-| Linear Regression | 0.000998 | 0.031587 | 0.022794 | **0.0149** |
-| Random Forest | **0.000457** | 0.021387 | **0.017306** | -0.0511 |
-| XGBoost | 0.001041 | 0.032258 | 0.023208 | -0.0274 |
+Classification Results — Direction Prediction (Up/Down)
+Binary classification extension predicting whether NVDA will move Up or Down the next trading day.
+ModelAUCAccuracyF1 ScoreLogistic Regression0.59158%0.58Random Forest0.49450%0.49
+Key Findings
 
-### Insights
+Logistic Regression outperformed Random Forest in both AUC and accuracy — consistent with regression findings where simpler models handled financial noise better
+Random Forest AUC of 0.494 is essentially random, confirming it captures no meaningful directional signal
+58% accuracy for Logistic Regression represents a modest but genuine signal above the 50% random baseline
+Results across both regression and classification consistently support the Efficient Market Hypothesis — daily stock movements are largely unpredictable from historical returns alone
 
-1. **All models struggled with daily return prediction** (negative or near-zero R² scores), which aligns with the Efficient Market Hypothesis—daily stock returns are largely unpredictable
 
-2. **Random Forest achieved the lowest error metrics** (MSE: 0.000457, MAE: 0.017306), making it the best performer despite a negative R²
+Why Negative R² and Near-Random Classification Are Expected
+The Efficient Market Hypothesis (EMH) suggests that stock prices already reflect all available information, making future price movements largely unpredictable from historical data alone. Our results across both regression and classification consistently support this:
 
-3. **Linear Regression had the only positive R²** (0.0149), indicating it was the only model to outperform the mean baseline, though it explains less than 2% of variance
+Daily returns exhibit high noise and weak autocorrelation
+Past returns have minimal predictive power for future returns
+Even sophisticated models like XGBoost and Random Forest cannot overcome fundamental market randomness
 
-4. **Model complexity ≠ better performance**: XGBoost (gradient boosting) performed worse than Random Forest (bagging), demonstrating that more sophisticated algorithms cannot overcome fundamental market randomness
+The near-random results are not a failure — they are an honest finding aligned with decades of financial research. Knowing when a problem is inherently difficult is as valuable as finding the best model.
 
-5. **Feature importance revealed weak patterns**: lag4 (4-day prior return) was most important for tree-based models, but overall feature importance was distributed fairly evenly, indicating no single strong predictor
+Methodology
+Data: NVDA stock, February 2018 – December 2025, 1,984 trading days
+Features: 5 lag features (lag1–lag5) + Rolling Standard Deviation (volatility)
+Train/Test Split: Chronological 80/20 split with no shuffle to prevent data leakage
+Regression Metrics: MSE, RMSE, MAE, R², residual analysis, feature importance, actual vs predicted plots
+Classification Metrics: ROC curves, AUC, confusion matrix, precision, recall, F1 score, class imbalance handling via class_weight='balanced'
 
-6. **All ML models beat naive baseline**: Even the weakest ML approach significantly outperformed the "repeat yesterday" strategy, validating the value of machine learning techniques
+Technologies Used
 
----
+Language: Python 3.10
+Data Analysis: Pandas, NumPy
+Visualization: Matplotlib, Seaborn
+Machine Learning: Scikit-learn, XGBoost
+Data Source: yfinance
 
-## 🛠️ Technologies Used
 
-* **Python 3.10**
-* **Data Analysis**: Pandas, NumPy
-* **Visualization**: Matplotlib, Seaborn
-* **Machine Learning**: Scikit-learn, XGBoost
-* **Data Source**: yfinance
-
----
-
-## 🚀 How to Run
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/AnanduKrishna-ds/Tech-Stock-Analysis-and-Prediction.git
+How to Run
+Clone the repository:
+bashgit clone https://github.com/AnanduKrishna-ds/Tech-Stock-Analysis-and-Prediction.git
 cd Tech-Stock-Analysis-and-Prediction
-```
+Install dependencies:
+bashpip install pandas numpy matplotlib seaborn scikit-learn xgboost yfinance
+Run notebooks in order from 01 through 07.
 
-2. **Install dependencies:**
-```bash
-pip install pandas numpy matplotlib seaborn scikit-learn xgboost yfinance
-```
+Lessons Learned
 
-3. **Run notebooks in order:**
-   * Start with `01_eda.ipynb` for data exploration
-   * `02_preprocessing.ipynb` for data validation and cleaning
-   * Then run model notebooks: `03_naive_baseline.ipynb` → `04_linear_regression.ipynb` → `05_random_forest.ipynb` → `06_xgboost.ipynb`
+Domain knowledge matters — understanding EMH and random walk theory is essential to interpret financial ML results correctly
+Simpler models can win — Logistic Regression outperformed Random Forest in classification just as Linear Regression held its own in regression
+Proper evaluation is critical — time series data requires chronological splits to avoid data leakage
+Honest reporting — negative and near-random results are findings, not failures
+Consistency across frameworks — regression and classification findings told the same story, strengthening the overall conclusion
 
----
 
-## 📈 Methodology
+Author
+Anandu Krishna
+GitHub: AnanduKrishna-ds
 
-### Data
-* **Stock**: NVDA (NVIDIA)
-* **Period**: February 2018 - December 2025 (1,984 trading days)
-* **Features**: 5 lag features (past returns) + Rolling Std (volatility)
-* **Target**: Daily returns
-
-### Model Progression
-1. **Naive Baseline**: Persistence model (tomorrow = today)
-2. **Linear Regression**: Simple linear relationships
-3. **Random Forest**: Ensemble bagging approach
-4. **XGBoost**: Gradient boosting with hyperparameter tuning
-
-### Evaluation
-* **Train/Test Split**: 80/20 chronological split (no shuffle to prevent data leakage)
-* **Metrics**: MSE, RMSE, MAE, R²
-* **Validation**: Residual analysis, feature importance, actual vs predicted plots
-
----
-
-## 💡 Why Negative R² Scores Are Expected
-
-This project demonstrates an important reality of financial prediction:
-
-**The Efficient Market Hypothesis (EMH)** suggests that stock prices already reflect all available information, making future price movements largely unpredictable from historical data alone. Our results support this theory:
-
-* Daily returns exhibit **high noise** and **weak autocorrelation**
-* Past returns have **minimal predictive power** for future returns
-* Even sophisticated models like XGBoost cannot overcome this fundamental randomness
-
-**The negative R² scores are not a failure**—they are an honest finding that aligns with decades of financial research. This project shows that knowing when a problem is inherently difficult is as valuable as finding the best solution.
-
----
-
-## 🎓 Lessons Learned
-
-1. **Domain knowledge matters**: Understanding financial markets (EMH, random walk theory) helps interpret results correctly
-2. **Simpler models can win**: Random Forest outperformed XGBoost; complexity doesn't guarantee better performance
-3. **Proper evaluation is critical**: Time series require chronological splits to avoid data leakage
-4. **Honesty in reporting**: Negative results teach us about problem difficulty, not model failure
-5. **Feature engineering limitations**: Even well-designed features (lags, volatility) provide minimal signal in noisy financial data
-
----
-
-## 📊 Future Work
-
-* Expand dataset to 10+ years for better generalization
-* Explore direction prediction (classification: Up/Down) instead of magnitude
-* Incorporate additional features:
-  * Trading volume
-  * Market sentiment (news, social media)
-  * Macroeconomic indicators (interest rates, GDP)
-* Test longer prediction horizons (weekly/monthly returns)
-* Implement ensemble stacking methods
-
----
-
-## 👤 Author
-
-**Anandu Krishna**
-* GitHub: [AnanduKrishna-ds](https://github.com/AnanduKrishna-ds)
-
----
-
-## 📝 License
-
+License
 This project is open source and available under the MIT License.
-
----
-
-## 🙏 Acknowledgments
-
-* Data provided by Yahoo Finance via yfinance
-* Inspired by research on the Efficient Market Hypothesis (Eugene Fama)
-* Special thanks to the open-source community for the incredible tools that made this analysis possible
-
----
-
-**⭐ If you found this project interesting or learned something from it, please consider giving it a star!**
